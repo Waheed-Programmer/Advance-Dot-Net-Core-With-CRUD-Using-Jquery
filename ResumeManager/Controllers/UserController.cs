@@ -17,7 +17,7 @@ namespace ResumeManager.Controllers
             return View();
         }
 
-        public IActionResult Create()
+        public IActionResult CreateOrEdit()
         {
             return View();
         }
