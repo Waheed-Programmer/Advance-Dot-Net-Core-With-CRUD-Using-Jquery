@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "font-awesome@6.2.0",
+      "destination": "wwwroot/font-awesome/",
+      "files": [
+        "css/all.min.css",
+        "webfonts/fa-brands-400.ttf",
+        "webfonts/fa-brands-400.woff2",
+        "webfonts/fa-regular-400.ttf",
+        "webfonts/fa-regular-400.woff2",
+        "webfonts/fa-solid-900.ttf",
+        "webfonts/fa-solid-900.woff2",
+        "webfonts/fa-v4compatibility.ttf",
+        "webfonts/fa-v4compatibility.woff2"
+      ]
+    },
+    {
+      "library": "bootswatch@5.2.2",
+      "destination": "wwwroot/bootswatch/",
+      "files": [
+        "pulse/bootstrap.min.css"
+      ]
+    },
+    {
+      "library": "notyf@3.10.0",
+      "destination": "wwwroot/notyf/",
+      "files": [
+        "notyf.min.js",
+        "notyf.min.css"
+      ]
+    }
+  ]
+}

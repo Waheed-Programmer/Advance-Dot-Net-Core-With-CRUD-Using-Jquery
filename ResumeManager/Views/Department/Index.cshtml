@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-center bg-light py-3 text-white shadow-sm border">
+
+<h1 class = "fw-bold text-dark ">Department</h1>
+
+<a id="LoadDepartments" class="btn btn-info ">
+    <i class="fa-solid fa-refresh"> </i>
+    Load Department
+</a>
+<a id="SetTemplate" class="btn btn-warning ">
+    <i class="fa-solid fa-file-edit"></i>
+    Set template
+</a>
+<a class="btn btn-secondary me-1 ">
+    <i class="fa-solid fa-download"></i>
+</a>
+<a id="LoadDepartments" class="btn btn-success ">
+    <i class="fa-solid fa-refresh"></i>
+    Upload Bulk data
+</a>
+</div>
+
+<div id="divContent">
+
+</div>
+
+<script>
+    $(document).ready(function (){
+        LoadDepartmentList();
+    });
+
+     function LoadDepartmentList(){
+         $.ajax({
+             type:'GET',
+             url: '@Url.Action("GetDepartmentlist","Department")',
+             success: function (response)
+             {
+                $('#divContent').html(response);
+             },
+             error: function (error)
+             {
+                alert(error);
+             }
+         });
+     }
+
+
+
+</script>

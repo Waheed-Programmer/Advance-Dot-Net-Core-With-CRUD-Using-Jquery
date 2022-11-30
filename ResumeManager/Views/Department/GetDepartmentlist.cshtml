@@ -1,0 +1,231 @@
+﻿<script src="~/js/site.js" asp-append-version="true"></script>
+@*
+<script>
+    const notyf = new Notyf({
+    duration: 3000,
+    position: {
+        x: 'right',
+        y: 'top',
+    },
+    types: [
+        {
+            type: 'warning',
+            background: 'orange',
+            icon: {
+                className: 'material-icons',
+                tagName: 'i',
+                text: 'warning'
+            }
+        },
+        {
+            type: 'error',
+            background: 'indianred',
+            duration: 2000,
+            dismissible: true
+        },
+        {
+            type: 'success',
+            background: 'indianred',
+            duration: 2000,
+            dismissible: true
+        }
+    ]
+});
+</script>
+*@
+
+<div class = "container">
+    
+    <form id="departmentForm">
+        
+        <fieldset>
+            <h3 class="text-primary">Department form</h3>
+            <a id="CreateNew" class="btn btn-primary btn-sm ">
+                <i class="fa-solid fa-plus-circle"></i>
+                Create New
+            </a>
+            <br /><br />
+            <input type ="hidden" name="Did" id="Did"/>
+            <div class="form-group mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" placeholder="Enter department" id="Name" name="Name"/>
+            </div>
+            <button type="button" class="btn btn-success" id="btnSave">Save</button>
+        </fieldset>
+    </form>
+      
+    <br />
+    <table class="table table-hover table-bordered table-striped ">
+        <thead>
+            <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="departmentListDiv">
+
+        </tbody>
+    </table>
+
+</div>
+
+
+<script>
+    $(document).ready(function (){
+        LoadDepartmentListData();
+        var currentrow;
+    });
+
+    function LoadDepartmentListData(){
+         $.ajax({
+             type:'GET',
+             url: '@Url.Action("DepartmentList","Department")',
+             success: function (response)
+             {
+               if(response !=undefined || response != null)
+               {
+                  if(response.isSuccess){
+                      var list = response.data;
+
+                      var row;
+
+                      for(var j = 0; j < list.length; j++){
+                          row += `
+                                 <tr>
+                                 <td>${list[j].did}</td>
+                                 <td>${list[j].name}</td>                                
+                                 <td>
+                                 <button type="button" class="btn btn-primary" onclick = 'Edit(${list[j].did},this)'><i class ="fa-solid fa-edit"></i></button> |
+                                 <button type="button" class="btn btn-danger" onclick = 'Delete(${list[j].did},this)'><i class ="fa-solid fa-trash-can"></i></button> 
+                                 
+                                 </td>
+                                 </tr>                                
+                                 `
+                             }
+                             $('#departmentListDiv').html(row);
+                  }
+               }
+               else
+               {
+                   alert('Error')
+               }
+             },
+             error: function (error)
+             {
+                alert('Error');
+             }
+         });
+     }
+    $('#btnSave').click(function(){
+         var _did = $("#Did").val();  
+         var _name = $("#Name").val();
+        $.ajax({
+             type:'POST',
+             url: '@Url.Action("SaveDepartment","Department")',
+             data: $('#departmentForm').serialize(),
+             success: function (response)
+             {
+               if(response !=undefined || response != null)
+               {    debugger
+                  if(response.isSuccess){
+                      var list = response.data;
+        
+                      if(_did > 0)
+                      {
+                        currentrow.find('td:eq(1)').text(list.name);
+                        notyf.open({type:'success',message:response.message})
+                        $('#departmentForm')[0].reset();
+                      }
+                      else
+                      {                   
+                      var row;                     
+                          row = `
+                                 <tr>
+                                 <td>${list.did}</td>
+                                 <td>${list.name}</td>                                
+                                 <td>
+                                 <button type="button" class="btn btn-primary" onclick = 'Edit(${list.did},this)'><i class ="fa-solid fa-edit"></i></button> |
+                                 <button type="button" class="btn btn-danger" onclick = 'Delete(${list.did},this)'><i class ="fa-solid fa-trash-can"></i></button> 
+                                 
+                                 </td>
+                                 </tr>                                
+                                 `
+                             $('#departmentListDiv').append(row);
+                             //alert(response.message)
+                             notyf.open({type:'success',message:response.message})
+                             $('#departmentForm')[0].reset();
+                     
+                       }
+                  }
+                  else
+                  {
+
+                  notyf.open({type:'success',message:"Please Enter Field"})
+
+                  }
+               }
+               else
+               {
+                notyf.open({type:'success',message:response.message})
+                   
+               }
+             },
+             error: function (error)
+             {
+                console.log(error.statusText);
+                notyf.open({type:'eror',message:error.statusText})
+             }
+         });
+    });
+    
+    $('#CreateNew').click(function(){
+        debugger
+        $('form :input').val('');
+        $('#departmentForm')[0].reset();
+    });
+
+    // Function for Edit
+    function Edit(id,element)
+    {
+        debugger
+        currentrow = $(element).closest('tr');
+
+         $.ajax({
+             type:'GET',
+             url: '@Url.Action("Edit","Department")',
+             data: {did:id},
+             success: function (response)
+             {
+               if(response !=undefined || response != null)
+               {    debugger
+                  if(response.isSuccess){
+                    $("#Did").val(response.data.did);  
+                    $("#Name").val(response.data.name);  
+                     
+                  }
+                  else
+                  {
+
+                  notyf.open({type:'success',message:"Something went wrong"})
+
+                  }
+               }
+               else
+               {
+                notyf.open({type:'success',message:response.message})
+                   
+               }
+             },
+             error: function (error)
+             {
+                console.log(error.statusText);
+                notyf.open({type:'eror',message:error.statusText})
+             }
+         });
+    }
+  
+
+    //Function for Delete
+    function Delete(id,element){}
+</script>
