@@ -4,12 +4,13 @@
     ViewData["Title"] = "CreateOrEdit";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<br />
 <div class="container">
 <h4>UserApp</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateOrEdit">
+        <form asp-action="CreateOrEdit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="UserId" />
             <div class="form-group">
@@ -23,15 +24,38 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CityId" class="control-label"></label>
-                <select asp-for="CityId" class="form-control" asp-items="ViewBag.CityId"></select>
+                <label asp-for="CityId" class="control-label">Select City</label>
+                <select asp-for="CityId" class="form-control" asp-items="ViewBag.CityList">
+                <option>---Select City---</option>
+                </select>
                 <span asp-validation-for="CityId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ImageId" class="control-label"></label>
-                <select asp-for="ImageId" class="form-control" asp-items="ViewBag.ImageId"></select>
-                <span asp-validation-for="ImageId" class="text-danger"></span>
+                <label asp-for="GenderId" class="control-label mt-3">Gender</label>
+                @foreach(var item in Model.Genderlist){
+                <div class="form-check form-check-inline">
+                 <input class="form-check-input" type="radio" asp-for="GenderId" value=@item.Value>
+                <label class="form-check-label" for="inlineRadio1">@item.Text</label>
+                </div>
+                }
             </div>
+
+            <div class="form-group">
+                <label class="control-label mt-3">Interest</label><br />
+                @for(int i =0;i<Model.Interestlist.Count();i++)
+                {
+                <div class="form-check form-check-inline">
+                <input type="hidden" asp-for="@Model.Interestlist[i].Value"/>
+                 <input class="form-check-input" type="checkbox" asp-for="@Model.Interestlist[i].Selected">
+                <label class="form-check-label" for="inlineRadio1">@Model.Interestlist[i].Text</label>
+                </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <input type="file" class="profileImage" id="profileImage" />
+            </div>
+            
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -40,3 +64,52 @@
 </div>
 
 </div>
+
+
+
+<script>
+    $('#profileImage').change(function (){
+        var file = document.getElementById('profileImage').file[0];
+       
+        var filename = file.name;
+        var extension = filename.split('.').pop();
+        
+        var validateImageExtension = ["png","jpg","jpeg"];
+        var isImagevalid = true;
+        
+        if($.inArray(extension, validateImageExtension)==-1)
+        {
+            isImagevalid = false;
+        }
+        
+        if(isImagevalid)
+        {
+            var formData = new FormData();
+            formData.append("Image",file);
+
+            $.ajax({
+
+                type: "POST",
+                url: ,
+                data: formData,
+                processData: false,
+                contentType: false,
+
+                success: function ()
+                {
+                
+                },
+                error: function ()
+                {
+                    alert(error)
+                }
+
+            });
+        }
+
+    });
+
+</script>
+
+
+

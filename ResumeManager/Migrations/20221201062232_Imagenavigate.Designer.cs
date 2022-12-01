@@ -12,8 +12,8 @@ using ResumeManager.Data;
 namespace ResumeManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221129184710_UpdateDBNew")]
-    partial class UpdateDBNew
+    [Migration("20221201062232_Imagenavigate")]
+    partial class Imagenavigate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -60,6 +60,23 @@ namespace ResumeManager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Applicants");
+                });
+
+            modelBuilder.Entity("ResumeManager.Models.Cities", b =>
+                {
+                    b.Property<int>("CityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CityId"), 1L, 1);
+
+                    b.Property<string>("CityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CityId");
+
+                    b.ToTable("Cities");
                 });
 
             modelBuilder.Entity("ResumeManager.Models.Department", b =>
@@ -142,6 +159,23 @@ namespace ResumeManager.Migrations
                     b.ToTable("Experiences");
                 });
 
+            modelBuilder.Entity("ResumeManager.Models.Gender", b =>
+                {
+                    b.Property<int>("GenderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GenderId"), 1L, 1);
+
+                    b.Property<string>("GenderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("GenderId");
+
+                    b.ToTable("Genders");
+                });
+
             modelBuilder.Entity("ResumeManager.Models.Image", b =>
                 {
                     b.Property<int>("ImageId")
@@ -174,6 +208,23 @@ namespace ResumeManager.Migrations
                     b.ToTable("Images");
                 });
 
+            modelBuilder.Entity("ResumeManager.Models.Interest", b =>
+                {
+                    b.Property<int>("InterestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InterestId"), 1L, 1);
+
+                    b.Property<string>("InterestName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("InterestId");
+
+                    b.ToTable("Interests");
+                });
+
             modelBuilder.Entity("ResumeManager.Models.UserApp", b =>
                 {
                     b.Property<int>("UserId")
@@ -182,9 +233,15 @@ namespace ResumeManager.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GenderId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("ImageId")
                         .IsRequired()
@@ -196,10 +253,37 @@ namespace ResumeManager.Migrations
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("GenderId");
+
                     b.HasIndex("ImageId")
                         .IsUnique();
 
                     b.ToTable("UserApps");
+                });
+
+            modelBuilder.Entity("ResumeManager.Models.UserInterest", b =>
+                {
+                    b.Property<int>("UserInterestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserInterestId"), 1L, 1);
+
+                    b.Property<int>("InterestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserInterestId");
+
+                    b.HasIndex("InterestId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserInterests");
                 });
 
             modelBuilder.Entity("ResumeManager.Models.Employee", b =>
@@ -226,13 +310,48 @@ namespace ResumeManager.Migrations
 
             modelBuilder.Entity("ResumeManager.Models.UserApp", b =>
                 {
+                    b.HasOne("ResumeManager.Models.Cities", "Cities")
+                        .WithMany("UserApps")
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ResumeManager.Models.Gender", "Gender")
+                        .WithMany("UserApps")
+                        .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ResumeManager.Models.Image", "Image")
                         .WithOne("UserApp")
                         .HasForeignKey("ResumeManager.Models.UserApp", "ImageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Cities");
+
+                    b.Navigation("Gender");
+
                     b.Navigation("Image");
+                });
+
+            modelBuilder.Entity("ResumeManager.Models.UserInterest", b =>
+                {
+                    b.HasOne("ResumeManager.Models.Interest", "Interest")
+                        .WithMany("UserInterests")
+                        .HasForeignKey("InterestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ResumeManager.Models.UserApp", "UserApp")
+                        .WithMany("UserInterests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Interest");
+
+                    b.Navigation("UserApp");
                 });
 
             modelBuilder.Entity("ResumeManager.Models.Applicant", b =>
@@ -240,15 +359,35 @@ namespace ResumeManager.Migrations
                     b.Navigation("Experiences");
                 });
 
+            modelBuilder.Entity("ResumeManager.Models.Cities", b =>
+                {
+                    b.Navigation("UserApps");
+                });
+
             modelBuilder.Entity("ResumeManager.Models.Department", b =>
                 {
                     b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("ResumeManager.Models.Gender", b =>
+                {
+                    b.Navigation("UserApps");
                 });
 
             modelBuilder.Entity("ResumeManager.Models.Image", b =>
                 {
                     b.Navigation("UserApp")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ResumeManager.Models.Interest", b =>
+                {
+                    b.Navigation("UserInterests");
+                });
+
+            modelBuilder.Entity("ResumeManager.Models.UserApp", b =>
+                {
+                    b.Navigation("UserInterests");
                 });
 #pragma warning restore 612, 618
         }

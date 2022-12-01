@@ -15,6 +15,9 @@ namespace ResumeManager.Data
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<UserApp> UserApps { get; set; }
         public virtual DbSet<Cities> Cities { get; set; }
+        public virtual DbSet<Gender> Genders { get; set; }
+        public virtual DbSet<Interest> Interests { get; set; }
+        public virtual DbSet<UserInterest> UserInterests { get; set; }
         public virtual DbSet<Image> Images { get; set; }
 
 
